@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260522071133_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260522072441_UpdateDemoPasswordHashes")]
+    partial class UpdateDemoPasswordHashes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -549,7 +549,8 @@ namespace DataAccessLayer.Migrations
                 {
                     b.HasOne("DataAccessLayer.Entities.Driver", "Driver")
                         .WithMany("Deliveries")
-                        .HasForeignKey("DriverId");
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("DataAccessLayer.Entities.Order", "Order")
                         .WithOne("Delivery")

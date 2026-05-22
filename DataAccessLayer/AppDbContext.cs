@@ -67,10 +67,12 @@ public class AppDbContext : DbContext
 
     private static void SeedData(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Customer>().HasData(new Customer { Id = 1, FullName = "Demo Customer", Email = "customer@example.com", PasswordHash = "demo", PhoneNumber = "0900000001", Role = "Customer", Address = "Ho Chi Minh City" });
-        modelBuilder.Entity<RestaurantOwner>().HasData(new RestaurantOwner { Id = 2, FullName = "Demo Owner", Email = "owner@example.com", PasswordHash = "demo", PhoneNumber = "0900000002", Role = "Restaurant" });
-        modelBuilder.Entity<Driver>().HasData(new Driver { Id = 3, FullName = "Demo Driver", Email = "driver@example.com", PasswordHash = "demo", PhoneNumber = "0900000003", Role = "Driver", VehicleNumber = "59A-12345", IsAvailable = true });
-        modelBuilder.Entity<Admin>().HasData(new Admin { Id = 4, FullName = "Demo Admin", Email = "admin@example.com", PasswordHash = "demo", PhoneNumber = "0900000004", Role = "Admin" });
+        const string demoPasswordHash = "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA";
+
+        modelBuilder.Entity<Customer>().HasData(new Customer { Id = 1, FullName = "Demo Customer", Email = "customer@example.com", PasswordHash = demoPasswordHash, PhoneNumber = "0900000001", Role = "Customer", Address = "Ho Chi Minh City" });
+        modelBuilder.Entity<RestaurantOwner>().HasData(new RestaurantOwner { Id = 2, FullName = "Demo Owner", Email = "owner@example.com", PasswordHash = demoPasswordHash, PhoneNumber = "0900000002", Role = "Restaurant" });
+        modelBuilder.Entity<Driver>().HasData(new Driver { Id = 3, FullName = "Demo Driver", Email = "driver@example.com", PasswordHash = demoPasswordHash, PhoneNumber = "0900000003", Role = "Driver", VehicleNumber = "59A-12345", IsAvailable = true });
+        modelBuilder.Entity<Admin>().HasData(new Admin { Id = 4, FullName = "Demo Admin", Email = "admin@example.com", PasswordHash = demoPasswordHash, PhoneNumber = "0900000004", Role = "Admin" });
         modelBuilder.Entity<Restaurant>().HasData(new Restaurant { Id = 1, Name = "Campus Bites", Address = "University Street", PhoneNumber = "0280000001", Status = "Active", RestaurantOwnerId = 2 });
         modelBuilder.Entity<MenuItem>().HasData(
             new MenuItem { Id = 1, RestaurantId = 1, Name = "Chicken Rice", Description = "Grilled chicken with rice", Price = 45000, IsAvailable = true },

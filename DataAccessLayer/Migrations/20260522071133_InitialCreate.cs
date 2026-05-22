@@ -283,22 +283,22 @@ namespace DataAccessLayer.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Address", "Email", "FullName", "PasswordHash", "PhoneNumber", "Role", "UserType" },
-                values: new object[] { 1, "Ho Chi Minh City", "customer@example.com", "Demo Customer", "demo", "0900000001", "Customer", "Customer" });
+                values: new object[] { 1, "Ho Chi Minh City", "customer@example.com", "Demo Customer", "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA", "0900000001", "Customer", "Customer" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "FullName", "PasswordHash", "PhoneNumber", "Role", "UserType" },
-                values: new object[] { 2, "owner@example.com", "Demo Owner", "demo", "0900000002", "Restaurant", "RestaurantOwner" });
+                values: new object[] { 2, "owner@example.com", "Demo Owner", "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA", "0900000002", "Restaurant", "RestaurantOwner" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "FullName", "IsAvailable", "PasswordHash", "PhoneNumber", "Role", "UserType", "VehicleNumber" },
-                values: new object[] { 3, "driver@example.com", "Demo Driver", true, "demo", "0900000003", "Driver", "Driver", "59A-12345" });
+                values: new object[] { 3, "driver@example.com", "Demo Driver", true, "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA", "0900000003", "Driver", "Driver", "59A-12345" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "FullName", "PasswordHash", "PhoneNumber", "Role", "UserType" },
-                values: new object[] { 4, "admin@example.com", "Demo Admin", "demo", "0900000004", "Admin", "Admin" });
+                values: new object[] { 4, "admin@example.com", "Demo Admin", "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA", "0900000004", "Admin", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "Carts",

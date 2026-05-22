@@ -436,7 +436,7 @@ namespace DataAccessLayer.Migrations
                             Id = 4,
                             Email = "admin@example.com",
                             FullName = "Demo Admin",
-                            PasswordHash = "demo",
+                            PasswordHash = "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA",
                             PhoneNumber = "0900000004",
                             Role = "Admin"
                         });
@@ -459,7 +459,7 @@ namespace DataAccessLayer.Migrations
                             Id = 1,
                             Email = "customer@example.com",
                             FullName = "Demo Customer",
-                            PasswordHash = "demo",
+                            PasswordHash = "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA",
                             PhoneNumber = "0900000001",
                             Role = "Customer",
                             Address = "Ho Chi Minh City"
@@ -486,7 +486,7 @@ namespace DataAccessLayer.Migrations
                             Id = 3,
                             Email = "driver@example.com",
                             FullName = "Demo Driver",
-                            PasswordHash = "demo",
+                            PasswordHash = "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA",
                             PhoneNumber = "0900000003",
                             Role = "Driver",
                             IsAvailable = true,
@@ -506,7 +506,7 @@ namespace DataAccessLayer.Migrations
                             Id = 2,
                             Email = "owner@example.com",
                             FullName = "Demo Owner",
-                            PasswordHash = "demo",
+                            PasswordHash = "2A97516C354B68848CDBD8F54A226A0A55B21ED138E207AD6C5CBB9C00AA5AEA",
                             PhoneNumber = "0900000002",
                             Role = "Restaurant"
                         });
@@ -546,7 +546,8 @@ namespace DataAccessLayer.Migrations
                 {
                     b.HasOne("DataAccessLayer.Entities.Driver", "Driver")
                         .WithMany("Deliveries")
-                        .HasForeignKey("DriverId");
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("DataAccessLayer.Entities.Order", "Order")
                         .WithOne("Delivery")
