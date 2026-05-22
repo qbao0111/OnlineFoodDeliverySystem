@@ -57,6 +57,11 @@ public class AppDbContext : DbContext
             .HasIndex(item => new { item.CartId, item.MenuItemId })
             .IsUnique();
 
+        foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(entity => entity.GetForeignKeys()))
+        {
+            foreignKey.DeleteBehavior = DeleteBehavior.NoAction;
+        }
+
         SeedData(modelBuilder);
     }
 
