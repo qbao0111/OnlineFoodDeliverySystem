@@ -1,0 +1,101 @@
+@startuml
+left to right direction
+
+actor Customer
+actor Restaurant
+actor "Delivery Driver" as Driver
+actor Admin
+actor "Payment Gateway" as PaymentGateway
+actor "Notification System" as NotificationSystem
+
+rectangle "Online Food Delivery System" {
+
+  usecase "Register" as UC_Register
+  usecase "Log in" as UC_Login
+  usecase "Browse Restaurants" as UC_Browse
+  usecase "View Menus" as UC_ViewMenu
+  usecase "Add Food to Cart" as UC_AddCart
+  usecase "Place Order" as UC_PlaceOrder
+  usecase "Make Payment" as UC_Payment
+  usecase "Track Order Status" as UC_Track
+  usecase "Cancel Order" as UC_Cancel
+  usecase "Rate Restaurant" as UC_Rate
+
+  usecase "Manage Menu" as UC_ManageMenu
+  usecase "Receive Order" as UC_ReceiveOrder
+  usecase "Accept Order" as UC_AcceptOrder
+  usecase "Reject Order" as UC_RejectOrder
+  usecase "Update Preparation Status" as UC_UpdatePrep
+
+  usecase "View Delivery Tasks" as UC_ViewTasks
+  usecase "Accept Delivery Task" as UC_AcceptTask
+  usecase "Pick Up Food" as UC_Pickup
+  usecase "Update Delivery Status" as UC_UpdateDelivery
+  usecase "Complete Delivery" as UC_CompleteDelivery
+
+  usecase "Manage Users" as UC_ManageUsers
+  usecase "Manage Restaurants" as UC_ManageRestaurants
+  usecase "Manage Drivers" as UC_ManageDrivers
+  usecase "Manage Orders" as UC_ManageOrders
+  usecase "Manage Payments" as UC_ManagePayments
+  usecase "View Reports" as UC_ViewReports
+
+  usecase "Process Payment" as UC_ProcessPayment
+  usecase "Send Notification" as UC_Notify
+}
+
+Customer --> UC_Register
+Customer --> UC_Login
+Customer --> UC_Browse
+Customer --> UC_ViewMenu
+Customer --> UC_AddCart
+Customer --> UC_PlaceOrder
+Customer --> UC_Payment
+Customer --> UC_Track
+Customer --> UC_Cancel
+Customer --> UC_Rate
+
+Restaurant --> UC_ManageMenu
+Restaurant --> UC_ReceiveOrder
+Restaurant --> UC_AcceptOrder
+Restaurant --> UC_RejectOrder
+Restaurant --> UC_UpdatePrep
+
+Driver --> UC_ViewTasks
+Driver --> UC_AcceptTask
+Driver --> UC_Pickup
+Driver --> UC_UpdateDelivery
+Driver --> UC_CompleteDelivery
+
+Admin --> UC_ManageUsers
+Admin --> UC_ManageRestaurants
+Admin --> UC_ManageDrivers
+Admin --> UC_ManageOrders
+Admin --> UC_ManagePayments
+Admin --> UC_ViewReports
+
+PaymentGateway --> UC_ProcessPayment
+NotificationSystem --> UC_Notify
+
+UC_PlaceOrder .> UC_Login : <<include>>
+UC_PlaceOrder .> UC_AddCart : <<include>>
+UC_PlaceOrder .> UC_Payment : <<include>>
+
+UC_Payment .> UC_ProcessPayment : <<include>>
+UC_Payment .> UC_Notify : <<include>>
+
+UC_AcceptOrder .> UC_Notify : <<include>>
+UC_RejectOrder .> UC_Notify : <<include>>
+UC_UpdatePrep .> UC_Notify : <<include>>
+UC_UpdateDelivery .> UC_Notify : <<include>>
+UC_CompleteDelivery .> UC_Notify : <<include>>
+
+UC_Cancel .> UC_PlaceOrder : <<extend>>
+UC_Rate .> UC_CompleteDelivery : <<extend>>
+
+UC_ViewMenu .> UC_Browse : <<include>>
+UC_AcceptTask .> UC_ViewTasks : <<include>>
+UC_Pickup .> UC_AcceptTask : <<include>>
+UC_CompleteDelivery .> UC_UpdateDelivery : <<include>>
+
+@enduml

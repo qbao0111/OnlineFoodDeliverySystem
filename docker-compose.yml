@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: online-food-delivery-api
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=OnlineFoodDeliveryDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+      Jwt__Key: change-this-development-secret-key-for-production
+      Jwt__Issuer: OnlineFoodDeliverySystem
+      Jwt__Audience: OnlineFoodDeliverySystemUsers
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: online-food-delivery-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: Your_password123
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  sqlserver-data:

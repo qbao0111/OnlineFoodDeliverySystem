@@ -1,0 +1,220 @@
+@startuml
+title Online Food Delivery System - Package Diagram
+
+skinparam packageStyle rectangle
+
+package "Presentation Layer" as Presentation {
+  package "Controllers" {
+    [AuthController]
+    [RestaurantController]
+    [MenuController]
+    [CartController]
+    [OrderController]
+    [PaymentController]
+    [DeliveryController]
+    [NotificationController]
+    [ReviewController]
+    [AdminController]
+  }
+
+  package "API Endpoints" {
+    [Auth Endpoints]
+    [Restaurant Endpoints]
+    [Menu Endpoints]
+    [Cart Endpoints]
+    [Order Endpoints]
+    [Payment Endpoints]
+    [Delivery Endpoints]
+    [Notification Endpoints]
+    [Review Endpoints]
+    [Admin Endpoints]
+  }
+
+  package "Request/Response Models" {
+    [LoginRequest]
+    [RegisterRequest]
+    [OrderRequest]
+    [PaymentRequest]
+    [ApiResponse]
+  }
+}
+
+package "Business Layer" as Business {
+  package "Service Interfaces" {
+    [IAuthService]
+    [IRestaurantService]
+    [IMenuService]
+    [ICartService]
+    [IOrderService]
+    [IPaymentService]
+    [IDeliveryService]
+    [INotificationService]
+    [IReviewService]
+    [IAdminService]
+  }
+
+  package "Services" {
+    [AuthService]
+    [RestaurantService]
+    [MenuService]
+    [CartService]
+    [OrderService]
+    [PaymentService]
+    [DeliveryService]
+    [NotificationService]
+    [ReviewService]
+    [AdminService]
+  }
+
+  package "DTOs" {
+    [UserDTO]
+    [RestaurantDTO]
+    [MenuItemDTO]
+    [CartDTO]
+    [OrderDTO]
+    [PaymentDTO]
+    [DeliveryDTO]
+    [ReviewDTO]
+  }
+
+  package "Business Logic" {
+    [OrderCalculation]
+    [OrderStatusManager]
+    [DeliveryAssignment]
+    [ReportGenerator]
+  }
+
+  package "Validation Rules" {
+    [UserValidator]
+    [OrderValidator]
+    [PaymentValidator]
+    [MenuItemValidator]
+  }
+
+  package "Design Patterns" {
+    [Repository Pattern]
+    [Service Layer Pattern]
+    [Payment Strategy Pattern]
+  }
+
+  package "Payment Strategies" {
+    [IPaymentStrategy]
+    [CreditCardPaymentStrategy]
+    [MomoPaymentStrategy]
+    [CashPaymentStrategy]
+  }
+}
+
+package "Data Access Layer" as DataAccess {
+  package "Repositories" {
+    [IRepository]
+    [UserRepository]
+    [RestaurantRepository]
+    [MenuRepository]
+    [CartRepository]
+    [OrderRepository]
+    [PaymentRepository]
+    [DeliveryRepository]
+    [NotificationRepository]
+    [ReviewRepository]
+  }
+
+  package "DbContext" {
+    [AppDbContext]
+  }
+
+  package "Entity Models" {
+    [User]
+    [Customer]
+    [RestaurantOwner]
+    [Driver]
+    [Admin]
+    [Restaurant]
+    [MenuItem]
+    [Cart]
+    [CartItem]
+    [Order]
+    [OrderItem]
+    [Payment]
+    [Delivery]
+    [Notification]
+    [Review]
+  }
+
+  package "Entity Framework Core" {
+    [EF Core Migrations]
+    [Entity Configurations]
+    [LINQ Queries]
+  }
+}
+
+database "SQL Database" as DB
+
+Presentation --> Business : calls services
+Business --> DataAccess : uses repositories
+DataAccess --> DB : reads/writes data
+
+[AuthController] --> [IAuthService]
+[RestaurantController] --> [IRestaurantService]
+[MenuController] --> [IMenuService]
+[CartController] --> [ICartService]
+[OrderController] --> [IOrderService]
+[PaymentController] --> [IPaymentService]
+[DeliveryController] --> [IDeliveryService]
+[NotificationController] --> [INotificationService]
+[ReviewController] --> [IReviewService]
+[AdminController] --> [IAdminService]
+
+[IAuthService] <|.. [AuthService]
+[IRestaurantService] <|.. [RestaurantService]
+[IMenuService] <|.. [MenuService]
+[ICartService] <|.. [CartService]
+[IOrderService] <|.. [OrderService]
+[IPaymentService] <|.. [PaymentService]
+[IDeliveryService] <|.. [DeliveryService]
+[INotificationService] <|.. [NotificationService]
+[IReviewService] <|.. [ReviewService]
+[IAdminService] <|.. [AdminService]
+
+[AuthService] --> [UserRepository]
+[RestaurantService] --> [RestaurantRepository]
+[MenuService] --> [MenuRepository]
+[CartService] --> [CartRepository]
+[OrderService] --> [OrderRepository]
+[PaymentService] --> [PaymentRepository]
+[DeliveryService] --> [DeliveryRepository]
+[NotificationService] --> [NotificationRepository]
+[ReviewService] --> [ReviewRepository]
+[AdminService] --> [UserRepository]
+
+[PaymentService] --> [IPaymentStrategy]
+[IPaymentStrategy] <|.. [CreditCardPaymentStrategy]
+[IPaymentStrategy] <|.. [MomoPaymentStrategy]
+[IPaymentStrategy] <|.. [CashPaymentStrategy]
+
+[IRepository] <|.. [UserRepository]
+[IRepository] <|.. [RestaurantRepository]
+[IRepository] <|.. [MenuRepository]
+[IRepository] <|.. [CartRepository]
+[IRepository] <|.. [OrderRepository]
+[IRepository] <|.. [PaymentRepository]
+[IRepository] <|.. [DeliveryRepository]
+[IRepository] <|.. [NotificationRepository]
+[IRepository] <|.. [ReviewRepository]
+
+[UserRepository] --> [AppDbContext]
+[RestaurantRepository] --> [AppDbContext]
+[MenuRepository] --> [AppDbContext]
+[CartRepository] --> [AppDbContext]
+[OrderRepository] --> [AppDbContext]
+[PaymentRepository] --> [AppDbContext]
+[DeliveryRepository] --> [AppDbContext]
+[NotificationRepository] --> [AppDbContext]
+[ReviewRepository] --> [AppDbContext]
+
+[AppDbContext] --> [Entity Models]
+[AppDbContext] --> [EF Core Migrations]
+[AppDbContext] --> [Entity Configurations]
+[AppDbContext] --> [LINQ Queries]
+
+@enduml

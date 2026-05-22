@@ -1,0 +1,323 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "Presentation Layer" {
+  class AuthController {
+    +Register()
+    +Login()
+  }
+
+  class RestaurantController {
+    +GetRestaurants()
+    +GetMenu()
+    +ManageMenu()
+  }
+
+  class CartController {
+    +AddToCart()
+    +ViewCart()
+    +RemoveItem()
+  }
+
+  class OrderController {
+    +PlaceOrder()
+    +CancelOrder()
+    +TrackOrder()
+  }
+
+  class PaymentController {
+    +MakePayment()
+  }
+
+  class DeliveryController {
+    +ViewTasks()
+    +AcceptTask()
+    +UpdateStatus()
+  }
+
+  class AdminController {
+    +ManageUsers()
+    +ManageOrders()
+    +ViewReports()
+  }
+
+  class RequestDTO
+  class ResponseDTO
+}
+
+package "Business Layer" {
+  class AuthService {
+    +Register()
+    +Login()
+  }
+
+  class RestaurantService {
+    +BrowseRestaurants()
+    +ViewMenu()
+    +ManageMenu()
+  }
+
+  class CartService {
+    +AddItem()
+    +RemoveItem()
+    +CalculateTotal()
+  }
+
+  class OrderService {
+    +PlaceOrder()
+    +CancelOrder()
+    +TrackOrder()
+  }
+
+  class PaymentService {
+    -paymentStrategy: IPaymentStrategy
+    +ProcessPayment()
+  }
+
+  class DeliveryService {
+    +ViewTasks()
+    +AcceptTask()
+    +PickUpFood()
+    +CompleteDelivery()
+  }
+
+  class ReviewService {
+    +AddReview()
+    +GetReviews()
+  }
+
+  class NotificationService {
+    +SendNotification()
+  }
+
+  class AdminService {
+    +ManageUsers()
+    +ManageRestaurants()
+    +ManageDrivers()
+    +ViewReports()
+  }
+
+  interface IPaymentStrategy {
+    +Pay(amount: decimal): bool
+  }
+
+  class CreditCardPaymentStrategy {
+    +Pay(amount: decimal): bool
+  }
+
+  class MomoPaymentStrategy {
+    +Pay(amount: decimal): bool
+  }
+
+  class CashPaymentStrategy {
+    +Pay(amount: decimal): bool
+  }
+}
+
+package "Data Access Layer" {
+  class AppDbContext {
+    +Users
+    +Restaurants
+    +Orders
+    +Payments
+    +Deliveries
+  }
+
+  interface IRepository<T> {
+    +GetById(id: int): T
+    +GetAll(): List<T>
+    +Add(entity: T)
+    +Update(entity: T)
+    +Delete(id: int)
+  }
+
+  class UserRepository
+  class RestaurantRepository
+  class OrderRepository
+  class PaymentRepository
+  class DeliveryRepository
+}
+
+package "Entities" {
+  abstract class User {
+    +Id: int
+    +FullName: string
+    +Email: string
+    +PasswordHash: string
+    +PhoneNumber: string
+    +Role: string
+    +Login()
+    +Logout()
+  }
+
+  class Customer {
+    +Address: string
+    +PlaceOrder()
+    +CancelOrder()
+    +RateRestaurant()
+  }
+
+  class RestaurantOwner {
+    +ManageMenu()
+    +AcceptOrder()
+    +RejectOrder()
+  }
+
+  class Driver {
+    +VehicleNumber: string
+    +IsAvailable: bool
+    +AcceptDelivery()
+    +UpdateDeliveryStatus()
+  }
+
+  class Admin {
+    +ManageUsers()
+    +ViewReports()
+  }
+
+  class Restaurant {
+    +Id: int
+    +Name: string
+    +Address: string
+    +PhoneNumber: string
+    +Status: string
+    +AddMenuItem()
+    +RemoveMenuItem()
+  }
+
+  class MenuItem {
+    +Id: int
+    +Name: string
+    +Description: string
+    +Price: decimal
+    +IsAvailable: bool
+    +UpdatePrice()
+  }
+
+  class Cart {
+    +Id: int
+    +CustomerId: int
+    +AddItem()
+    +RemoveItem()
+    +ClearCart()
+    +GetTotal()
+  }
+
+  class CartItem {
+    +Id: int
+    +Quantity: int
+    +UnitPrice: decimal
+    +GetSubTotal()
+  }
+
+  class Order {
+    +Id: int
+    +OrderDate: DateTime
+    +Status: string
+    +TotalAmount: decimal
+    +Place()
+    +Cancel()
+    +UpdateStatus()
+  }
+
+  class OrderItem {
+    +Id: int
+    +Quantity: int
+    +UnitPrice: decimal
+    +GetSubTotal()
+  }
+
+  class Payment {
+    +Id: int
+    +Amount: decimal
+    +PaymentMethod: string
+    +PaymentStatus: string
+    +PaidAt: DateTime
+    +ConfirmPayment()
+  }
+
+  class Delivery {
+    +Id: int
+    +PickupTime: DateTime
+    +DeliveredTime: DateTime
+    +DeliveryStatus: string
+    +UpdateStatus()
+  }
+
+  class Review {
+    +Id: int
+    +Rating: int
+    +Comment: string
+    +CreatedAt: DateTime
+  }
+
+  class Notification {
+    +Id: int
+    +Message: string
+    +Type: string
+    +IsRead: bool
+    +CreatedAt: DateTime
+    +MarkAsRead()
+  }
+}
+
+User <|-- Customer
+User <|-- RestaurantOwner
+User <|-- Driver
+User <|-- Admin
+
+RestaurantOwner "1" o-- "many" Restaurant
+Restaurant "1" *-- "many" MenuItem
+
+Customer "1" *-- "1" Cart
+Cart "1" *-- "many" CartItem
+CartItem "many" --> "1" MenuItem
+
+Customer "1" --> "many" Order
+Order "1" *-- "many" OrderItem
+OrderItem "many" --> "1" MenuItem
+
+Order "1" --> "1" Payment
+Order "1" --> "1" Delivery
+Driver "1" --> "many" Delivery
+
+Customer "1" --> "many" Review
+Restaurant "1" --> "many" Review
+
+User "1" --> "many" Notification
+
+AuthController --> AuthService
+RestaurantController --> RestaurantService
+CartController --> CartService
+OrderController --> OrderService
+PaymentController --> PaymentService
+DeliveryController --> DeliveryService
+AdminController --> AdminService
+
+AuthService --> UserRepository
+RestaurantService --> RestaurantRepository
+CartService --> RestaurantRepository
+OrderService --> OrderRepository
+PaymentService --> PaymentRepository
+DeliveryService --> DeliveryRepository
+AdminService --> UserRepository
+NotificationService --> UserRepository
+
+PaymentService --> IPaymentStrategy
+IPaymentStrategy <|.. CreditCardPaymentStrategy
+IPaymentStrategy <|.. MomoPaymentStrategy
+IPaymentStrategy <|.. CashPaymentStrategy
+
+UserRepository ..|> IRepository
+RestaurantRepository ..|> IRepository
+OrderRepository ..|> IRepository
+PaymentRepository ..|> IRepository
+DeliveryRepository ..|> IRepository
+
+UserRepository --> AppDbContext
+RestaurantRepository --> AppDbContext
+OrderRepository --> AppDbContext
+PaymentRepository --> AppDbContext
+DeliveryRepository --> AppDbContext
+
+@enduml

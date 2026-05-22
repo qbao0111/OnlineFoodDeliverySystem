@@ -1,0 +1,199 @@
+@startuml
+title Customer Places Food Order and Tracks Order Status
+
+actor Customer
+
+boundary OrderController
+control OrderService
+control PaymentService
+database OrderRepository
+database Database
+participant Restaurant
+participant Driver
+control NotificationService
+
+== Login ==
+
+Customer -> OrderController: Login(email, password)
+OrderController -> OrderService: ValidateCustomer(email, password)
+OrderService -> OrderRepository: GetCustomerByEmail(email)
+OrderRepository -> Database: SELECT Customer
+Database --> OrderRepository: Customer data
+OrderRepository --> OrderService: Customer
+OrderService --> OrderController: Login success + JWT token
+OrderController --> Customer: Return JWT token
+
+== Browse Restaurants and Menus ==
+
+Customer -> OrderController: GetRestaurants()
+OrderController -> OrderService: BrowseRestaurants()
+OrderService -> OrderRepository: GetRestaurants()
+OrderRepository -> Database: SELECT Restaurants
+Database --> OrderRepository: Restaurant list
+OrderRepository --> OrderService: Restaurant list
+OrderService --> OrderController: Restaurant DTOs
+OrderController --> Customer: Display restaurants
+
+Customer -> OrderController: GetMenuItems(restaurantId)
+OrderController -> OrderService: ViewMenu(restaurantId)
+OrderService -> OrderRepository: GetMenuItems(restaurantId)
+OrderRepository -> Database: SELECT MenuItems
+Database --> OrderRepository: Menu item list
+OrderRepository --> OrderService: Menu item list
+OrderService --> OrderController: Menu DTOs
+OrderController --> Customer: Display menu items
+
+== Add Items to Cart ==
+
+Customer -> OrderController: AddItemToCart(menuItemId, quantity)
+OrderController -> OrderService: AddItemToCart(customerId, menuItemId, quantity)
+OrderService -> OrderRepository: SaveCartItem(customerId, menuItemId, quantity)
+OrderRepository -> Database: INSERT / UPDATE CartItem
+Database --> OrderRepository: Cart updated
+OrderRepository --> OrderService: Success
+OrderService --> OrderController: Cart updated
+OrderController --> Customer: Show updated cart
+
+== Place Order ==
+
+Customer -> OrderController: PlaceOrder(cartId, paymentMethod)
+OrderController -> OrderService: PlaceOrder(customerId, cartId, paymentMethod)
+
+OrderService -> OrderRepository: GetCartItems(cartId)
+OrderRepository -> Database: SELECT CartItems
+Database --> OrderRepository: Cart items
+OrderRepository --> OrderService: Cart items
+
+OrderService -> OrderService: CalculateTotalAmount()
+
+OrderService -> OrderRepository: CreateOrder(customerId, cartItems, totalAmount)
+OrderRepository -> Database: INSERT Order, OrderItems
+Database --> OrderRepository: Order created
+OrderRepository --> OrderService: Order
+
+== Process Payment ==
+
+OrderService -> PaymentService: ProcessPayment(orderId, totalAmount, paymentMethod)
+
+alt Payment successful
+    PaymentService --> OrderService: Payment success
+
+    OrderService -> OrderRepository: UpdateOrderStatus(orderId, "Paid")
+    OrderRepository -> Database: UPDATE Order Status
+    Database --> OrderRepository: Updated
+
+    OrderService -> NotificationService: NotifyCustomer(orderId, "Payment successful")
+    NotificationService --> Customer: Payment successful notification
+
+    == Restaurant Handles Order ==
+
+    OrderService -> Restaurant: SendOrder(order)
+    Restaurant --> OrderService: AcceptOrder()
+
+    OrderService -> OrderRepository: UpdateOrderStatus(orderId, "Accepted")
+    OrderRepository -> Database: UPDATE Order Status
+    Database --> OrderRepository: Updated
+
+    OrderService -> NotificationService: NotifyCustomer(orderId, "Restaurant accepted your order")
+    NotificationService --> Customer: Order accepted notification
+
+    Restaurant --> OrderService: UpdatePreparationStatus("Preparing")
+    OrderService -> OrderRepository: UpdateOrderStatus(orderId, "Preparing")
+    OrderRepository -> Database: UPDATE Order Status
+    Database --> OrderRepository: Updated
+
+    OrderService -> NotificationService: NotifyCustomer(orderId, "Food is being prepared")
+    NotificationService --> Customer: Preparing notification
+
+    Restaurant --> OrderService: UpdatePreparationStatus("Ready for pickup")
+    OrderService -> OrderRepository: UpdateOrderStatus(orderId, "ReadyForPickup")
+    OrderRepository -> Database: UPDATE Order Status
+    Database --> OrderRepository: Updated
+
+    == Driver Delivery ==
+
+    OrderService -> Driver: AssignDeliveryTask(orderId)
+
+    alt Driver available
+        Driver --> OrderService: AcceptDeliveryTask(orderId)
+
+        OrderService -> OrderRepository: UpdateOrderStatus(orderId, "DriverAccepted")
+        OrderRepository -> Database: UPDATE Order Status
+        Database --> OrderRepository: Updated
+
+        OrderService -> NotificationService: NotifyCustomer(orderId, "Driver accepted delivery")
+        NotificationService --> Customer: Driver accepted notification
+
+        Driver -> OrderService: UpdateDeliveryStatus("Picked up")
+        OrderService -> OrderRepository: UpdateOrderStatus(orderId, "PickedUp")
+        OrderRepository -> Database: UPDATE Order Status
+        Database --> OrderRepository: Updated
+
+        OrderService -> NotificationService: NotifyCustomer(orderId, "Food picked up")
+        NotificationService --> Customer: Pickup notification
+
+        Driver -> OrderService: UpdateDeliveryStatus("On the way")
+        OrderService -> OrderRepository: UpdateOrderStatus(orderId, "OnTheWay")
+        OrderRepository -> Database: UPDATE Order Status
+        Database --> OrderRepository: Updated
+
+        OrderService -> NotificationService: NotifyCustomer(orderId, "Driver is on the way")
+        NotificationService --> Customer: Delivery notification
+
+        Customer -> OrderController: TrackOrder(orderId)
+        OrderController -> OrderService: GetOrderStatus(orderId)
+        OrderService -> OrderRepository: GetOrderById(orderId)
+        OrderRepository -> Database: SELECT Order
+        Database --> OrderRepository: Order status
+        OrderRepository --> OrderService: Order status
+        OrderService --> OrderController: Order status DTO
+        OrderController --> Customer: Display real-time order status
+
+        Driver -> OrderService: CompleteDelivery(orderId)
+        OrderService -> OrderRepository: UpdateOrderStatus(orderId, "Delivered")
+        OrderRepository -> Database: UPDATE Order Status
+        Database --> OrderRepository: Updated
+
+        OrderService -> NotificationService: NotifyCustomer(orderId, "Order delivered")
+        NotificationService --> Customer: Delivered notification
+
+    else Driver unavailable
+        OrderService -> OrderRepository: UpdateOrderStatus(orderId, "WaitingForDriver")
+        OrderRepository -> Database: UPDATE Order Status
+        Database --> OrderRepository: Updated
+
+        OrderService -> NotificationService: NotifyCustomer(orderId, "Waiting for available driver")
+        NotificationService --> Customer: Waiting for driver notification
+    end
+
+else Payment failed
+    PaymentService --> OrderService: Payment failed
+
+    OrderService -> OrderRepository: UpdateOrderStatus(orderId, "PaymentFailed")
+    OrderRepository -> Database: UPDATE Order Status
+    Database --> OrderRepository: Updated
+
+    OrderService -> NotificationService: NotifyCustomer(orderId, "Payment failed")
+    NotificationService --> Customer: Payment failed notification
+
+    OrderService --> OrderController: Payment failed response
+    OrderController --> Customer: Show payment failed message
+end
+
+== Restaurant Rejects Order Alternative ==
+
+alt Restaurant rejects order
+    Restaurant --> OrderService: RejectOrder(orderId)
+
+    OrderService -> OrderRepository: UpdateOrderStatus(orderId, "Rejected")
+    OrderRepository -> Database: UPDATE Order Status
+    Database --> OrderRepository: Updated
+
+    OrderService -> NotificationService: NotifyCustomer(orderId, "Restaurant rejected your order")
+    NotificationService --> Customer: Rejected notification
+
+    OrderService -> PaymentService: RefundPayment(orderId)
+    PaymentService --> OrderService: Refund processed
+end
+
+@enduml
