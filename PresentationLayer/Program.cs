@@ -2,7 +2,6 @@ using System.Text;
 using BusinessLayer;
 using DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -58,8 +57,8 @@ builder.Services
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            NameClaimType = ClaimTypes.NameIdentifier,
-            RoleClaimType = ClaimTypes.Role
+            NameClaimType = "sub",
+            RoleClaimType = "role"
         };
         options.MapInboundClaims = false;
     });
